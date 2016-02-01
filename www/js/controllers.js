@@ -120,10 +120,15 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('ProductCtrl', function($scope, User, $stateParams, $ionicLoading, Products, $cordovaCamera) {
+.controller('ProductCtrl', function($scope, $sce, User, $timeout, BASE_URL, $stateParams, $ionicLoading, Products, $cordovaCamera, Photo) {
   console.log('products!');
   $scope.products = Products.get();
   $scope.product = $scope.products[$stateParams.id];
+  $scope.newImage = false;
+
+  $scope.trust = function(src){
+    return $sce.trustAsResourceUrl(src);
+  }
 
   var pCopy = $scope.product;
   pCopy = {
@@ -138,6 +143,25 @@ angular.module('starter.controllers', [])
     $scope.products = products;
     console.log('products', products);
   });
+
+  $scope._upload_photo = function(name) {
+    Photo.upload_photo( name )
+    .then(function( res ){
+      var url =  BASE_URL.get().replace('/3', "") + res.image;
+      var image = document.getElementById('myImage');
+
+
+      $('#test').prepend('<img id="theImg" src="' + url +'" />');
+
+
+      image.src = url;
+      setTimeout(function(){
+        $scope.newImage = $sce.trustAsResourceUrl(n_url);
+        $timeout(function(){ $scope.$apply(); });
+      },1000)
+
+    })
+  }
 
   $scope.resetOrig = function(){
     $scope.product.name = pCopy.name;
@@ -195,7 +219,7 @@ angular.module('starter.controllers', [])
   }
   $scope.cam_options = {
       quality: 20,
-      destinationType: Camera.DestinationType.FILE_URI,
+      destinationType: Camera.DestinationType.DATA_URL,
       sourceType: Camera.PictureSourceType.CAMERA,
       mediaType: Camera.MediaType.PICTURE,
       allowEdit: true,
@@ -210,18 +234,10 @@ angular.module('starter.controllers', [])
     if (true) $scope.cam_options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
 
     $cordovaCamera.getPicture($scope.cam_options).then(function(imageData) {
-      window.plugins.Base64.encodeFile(imageData, function(base64){
-        console.log('file base64 encoding: ' + base64);
-        base64  = base64.replace("data:image/png;base64,", "");     // ios
-        base64  = base64.replace("data:image/*;charset=utf-8;base64,", ""); // android
-        //_upload_photo(base64);
-      });
-      var image = document.getElementById('myImage');
-      image.src = "data:image/jpeg;base64," + imageData;
-      //image.src = imageData;
-      $scope.product.photo  = imageData;
 
-      console.log('imageData', imageData);
+      $scope._upload_photo(imageData);
+
+      //console.log('imageData', imageData);
       $cordovaCamera.cleanup();
     }, function(err) {
       //console.log('camera error', err);

@@ -22,7 +22,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, $sceDelegateProvider) {
+  $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|http|mailto|file|tel):/);
+  /* For whitelisting urls*/
+$sceDelegateProvider.resourceUrlWhitelist(['self', new RegExp('^(http[s]?):\/\/(w{3}.)?localhost:1337/.+$')]);
+$sceDelegateProvider.resourceUrlWhitelist(['self', new RegExp('^(http[s]?):\/\/(w{3}.)?cloudfront\.net/.+$')]);
+
   $stateProvider
 
     .state('app', {

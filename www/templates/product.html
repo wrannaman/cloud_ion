@@ -14,20 +14,25 @@
         <span class="input-label">Quantity</span>
         <input type="number" ng-model="product.quantity">
       </label>
+
       <label class="item item-input">
-        <span class="input-label">Photo</span>
-        <img id="myImage">
+        <button class="button button-balanced" style="margin: 0 auto;" ng-click="photo()">
+          Take Photo
+        </button>
       </label>
       <label class="item item-input">
         <button class="button button-balanced" style="margin: 0 auto;" ng-click="update()">
           Update Product
         </button>
       </label>
-      <label class="item item-input">
-        <button class="button button-balanced" style="margin: 0 auto;" ng-click="photo()">
-          Take Photo
-        </button>
-      </label>
+
+      {{newImage}}
+      <div ng-show="newImage" class="image">
+        <img ng-src="newImage" style="max-width: 150px;">
+
+      </div>
+      <div id="test" style="max-width: 150px;"></div>
+
     </div>
   </ion-content>
 </ion-view>
