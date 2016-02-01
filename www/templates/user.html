@@ -1,0 +1,24 @@
+<ion-view view-title="User">
+  <ion-content>
+    <h1 style="text-align:center;">Update {{ user.firstName }}</h1>
+    <div class="list">
+      <label class="item item-input">
+        <span class="input-label">First Name</span>
+        <input type="text" ng-model="user.firstName">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Last Name</span>
+        <input type="text" ng-model="user.lastName">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Email</span>
+        <input type="text" ng-model="user.email">
+      </label>
+      <label class="item item-input">
+        <button class="button button-balanced" style="margin: 0 auto;" ng-click="update()">
+          Update User
+        </button>
+      </label>
+    </div>
+  </ion-content>
+</ion-view>

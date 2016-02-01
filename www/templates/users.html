@@ -1,0 +1,16 @@
+<ion-view view-title="Users">
+  <ion-content>
+    <ion-list>
+      <ion-item ng-repeat="u in users track by $index" href="#/app/users/user/{{$index}}">
+        <div class="row">
+          <div class="name" style="    margin-top: 11px;">
+            {{u.firstName + ' ' + u.lastName}}
+          </div>
+          <div class="more" style="    width: 100%;">
+            <a href="#/app/users/user/{{$index}}" class="button icon-right ion-chevron-right button-clear" style="float:right;"></a>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

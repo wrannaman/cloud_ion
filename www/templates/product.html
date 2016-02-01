@@ -1,0 +1,24 @@
+<ion-view view-title="Product">
+  <ion-content>
+    <h1 style="text-align:center;">Update {{ product.name }}</h1>
+    <div class="list">
+      <label class="item item-input">
+        <span class="input-label">Name</span>
+        <input type="text" ng-model="product.name">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">cost</span>
+        <input type="number" ng-model="product.cost">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Quantity</span>
+        <input type="number" ng-model="product.quantity">
+      </label>
+      <label class="item item-input">
+        <button class="button button-balanced" style="margin: 0 auto;" ng-click="update()">
+          Update Product
+        </button>
+      </label>
+    </div>
+  </ion-content>
+</ion-view>
