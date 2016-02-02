@@ -1,9 +1,12 @@
-<ion-view view-title="Products">
+<ion-view view-title="Products" cache-view="false">
   <ion-content>
     <ion-list>
       <ion-item ng-repeat="p in products track by $index" href="#/app/products/product/{{$index}}">
         <div class="row">
-          <div class="name" style="margin-top: 11px;">
+          <div class="photo" ng-show="p.photo" style="margin-top: 9px;">
+            <img ng-src="{{ p.photo }}" style="width: 40px;">
+          </div>
+          <div class="name" style="margin-top: 11px; margin-left: 40px;">
             {{ p.name }}
           </div>
           <div class="more" style="width: 100%;">

@@ -89,6 +89,11 @@ angular.module('starter.controllers', [])
       if (typeof(updated.error) !== 'undefined' && updated.user && updated.user.length === 1) {
         $scope.user = updated.user[0];
         alert('User updated successfully.');
+        userCopy = {
+          firstName: $scope.user.firstName,
+          lastName: $scope.user.lastName,
+          email: $scope.user.email,
+        }
       } else {
         $scope.user.firstName = userCopy.firstName;
         $scope.user.lastName = userCopy.lastName;
@@ -109,13 +114,19 @@ angular.module('starter.controllers', [])
   console.log('UserCtrl stateParams', $stateParams);
 })
 
-.controller('ProductsCtrl', function($scope, User, $stateParams, $ionicLoading, Products) {
+.controller('ProductsCtrl', function($scope, User, $stateParams, BASE_URL, $ionicLoading, Products) {
   console.log('products!');
   $scope.products = [];
   Products.fetch()
   .then(function(products){
     $scope.products = products;
-    console.log('products', products);
+    $scope.products = $scope.products.map(function(p,i){
+      if(p.photo) p.photo = BASE_URL.get().replace('/3/', '') + '/' + p.photo.replace('/3/', '');
+      console.log('p photo', p.photo);
+      return p;
+    })
+    //console.log('products', JSON.stringify(products));
+
   })
 
 })
@@ -125,7 +136,6 @@ angular.module('starter.controllers', [])
   $scope.products = Products.get();
   $scope.product = $scope.products[$stateParams.id];
   $scope.newImage = false;
-
   $scope.trust = function(src){
     return $sce.trustAsResourceUrl(src);
   }
@@ -135,6 +145,7 @@ angular.module('starter.controllers', [])
     name: $scope.product.name,
     cost: $scope.product.cost,
     quantity: $scope.product.quantity,
+    photo: $scope.product.photo,
   }
 
   $scope.products = [];
@@ -147,19 +158,10 @@ angular.module('starter.controllers', [])
   $scope._upload_photo = function(name) {
     Photo.upload_photo( name )
     .then(function( res ){
+      console.log('res', JSON.stringify(res));
+      $scope.newPhoto = true;
+      $scope.product.photo = res.image;
       var url =  BASE_URL.get().replace('/3', "") + res.image;
-      var image = document.getElementById('myImage');
-
-
-      $('#test').prepend('<img id="theImg" src="' + url +'" />');
-
-
-      image.src = url;
-      setTimeout(function(){
-        $scope.newImage = $sce.trustAsResourceUrl(n_url);
-        $timeout(function(){ $scope.$apply(); });
-      },1000)
-
     })
   }
 
@@ -171,7 +173,7 @@ angular.module('starter.controllers', [])
   $scope.update = function() {
     console.log($scope.product);
 
-    if (pCopy.name == $scope.product.name && pCopy.cost == $scope.product.cost && pCopy.quantity == $scope.product.quantity) return alert('No changes were made.');
+    if (pCopy.name == $scope.product.name && pCopy.cost == $scope.product.cost && pCopy.quantity == $scope.product.quantity && !$scope.newPhoto) return alert('No changes were made.');
 
     var letRx = /^[a-z A-Z]*$/;
 
@@ -204,10 +206,10 @@ angular.module('starter.controllers', [])
     Products.update($scope.product)
     .then(function(updated){
       $ionicLoading.hide();
-      console.log('updated', updated);
+      console.log('updated', JSON.stringify(updated));
       if (typeof(updated.error) !== 'undefined' && updated.product && updated.product.length === 1) {
         $scope.product = updated.product[0];
-        alert('PRoduct updated successfully.');
+        alert('Product updated successfully.');
       } else {
         $scope.resetOrig();
         alert('Error: ' + JSON.stringify(updated.error[0]))
@@ -234,8 +236,11 @@ angular.module('starter.controllers', [])
     if (true) $scope.cam_options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
 
     $cordovaCamera.getPicture($scope.cam_options).then(function(imageData) {
-
+      console.log('imageData', imageData);
       $scope._upload_photo(imageData);
+
+      var image = document.getElementById('test');
+      image.src = "data:image/jpeg;base64," + imageData;
 
       //console.log('imageData', imageData);
       $cordovaCamera.cleanup();
@@ -244,5 +249,6 @@ angular.module('starter.controllers', [])
       $cordovaCamera.cleanup();
     });
   }
+
 
 });

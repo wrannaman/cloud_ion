@@ -29,6 +29,7 @@ angular.module('starter.services')
   }
   API.update = function(product) {
     product.user = "56a41c15c2bea6f40ea2402b";
+    if (typeof(product.photo) === 'undefined') product.photo = null;
     return $http({
       method: 'PUT',
       url:  BASE_URL.get() + 'products',

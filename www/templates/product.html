@@ -1,4 +1,4 @@
-<ion-view view-title="Product">
+<ion-view view-title="Product" cache-view="false">
   <ion-content>
     <h1 style="text-align:center;">Update {{ product.name }}</h1>
     <div class="list">
@@ -26,12 +26,11 @@
         </button>
       </label>
 
-      {{newImage}}
-      <div ng-show="newImage" class="image">
-        <img ng-src="newImage" style="max-width: 150px;">
-
+      <div ng-show="product.photo" class="image">
+        <img ng-src="{{product.photo}}" style="max-width: 150px;">
       </div>
-      <div id="test" style="max-width: 150px;"></div>
+
+      <img id="test" style="width: 100px;">
 
     </div>
   </ion-content>
