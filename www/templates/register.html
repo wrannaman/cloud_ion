@@ -1,0 +1,27 @@
+<ion-view view-title="Login">
+  <ion-content>
+    <h1 style="text-align:center;">Register</h1>
+    <div class="list">
+      <label class="item item-input">
+        <span class="input-label">Email</span>
+        <input type="email" ng-model="user.email">
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Password</span>
+        <input type="password" ng-model="user.password">
+      </label>
+      <label class="item item-input">
+        <button class="button button-balanced" style="margin: 0 auto;" ng-click="login()">
+          Register
+        </button>
+      </label>
+
+
+    </div>
+    <div class="reg">
+      <a href="#/login">
+        Login
+      </a>
+    </div>
+  </ion-content>
+</ion-view>

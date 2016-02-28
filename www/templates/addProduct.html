@@ -1,0 +1,55 @@
+  <ion-modal-view>
+    <ion-header-bar>
+      <h1 class="title">Add Product</h1>
+      <button class="button button-dark" ng-click="closeModal()">Cancel</button>
+
+    </ion-header-bar>
+    <ion-content>
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Name</span>
+          <input type="text" ng-model="newProduct.name">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Cost</span>
+          <input type="number" ng-model="newProduct.cost">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Quantity</span>
+          <input type="number" ng-model="newProduct.quantity">
+        </label>
+
+          <div class="list">
+            <label class="item item-input item-select">
+              <div class="input-label">
+                Gender
+              </div>
+              <select ng-model="newProduct.gender">
+                <option>male</option>
+                <option selected>female</option>
+                <option>both</option>
+              </select>
+            </label>
+          </div>
+          <ion-list>
+
+            <ion-checkbox ng-model="newProduct.winter">Winter</ion-checkbox>
+            <ion-checkbox ng-model="newProduct.spring">Spring</ion-checkbox>
+            <ion-checkbox ng-model="newProduct.summer">Summer</ion-checkbox>
+            <ion-checkbox ng-model="newProduct.fall">Fall</ion-checkbox>
+
+          </ion-list>
+      </div>
+      <button class="button button-full button-dark" ng-click="saveProduct()">Save</button>
+    </ion-content>
+  </ion-modal-view>
+
+
+  <!-- name         : { type: "string"},
+  cost         : { type: "float"},
+  quantity     : { type: "integer", min: 0},
+  startDate    : { type: "datetime", defaultsTo: new Date()},
+  gender       : { type: "string", enum: ['male', 'female', 'both'] },
+  season       : { type: "array"},
+  user         : { model: "user", required: true},
+  photo        : { type: "string", defaultsTo: null}, -->

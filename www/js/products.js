@@ -1,5 +1,5 @@
 angular.module('starter.services')
-.factory('Products', [ '$http',  'BASE_URL', function($http, BASE_URL) {
+.factory('Products', [ '$http',  'BASE_URL', 'User', function($http, BASE_URL, User) {
 
   var base = BASE_URL.get();
   var API = { };
@@ -12,11 +12,12 @@ angular.module('starter.services')
   // 'put /3/products'                     : 'ProductsController.update',
   // 'delete /3/products/:id'              : 'ProductsController.delete',
 
-  API.fetch = function() {
+  API.fetch = function(user) {
     return $http({
       method: 'GET',
-      url:  BASE_URL.get() + 'products',
+      url:  BASE_URL.get() + 'products/all/' + user.id,
     }).then(function(res) {
+      console.log('products res', res);
       if( typeof(res.data.products) != 'undefined' ) {
         return Products = res.data.products
       }
@@ -27,9 +28,21 @@ angular.module('starter.services')
   API.get = function() {
     return Products;
   }
+  API.fetchOne = function(id) {
+    console.log('fetch one id', id);
+    return $http({
+      method: 'GET',
+      url:  BASE_URL.get() + 'products/' + id,
+    }).then(function(res) {
+      return res.data;
+    }, function(err) {
+      return [];
+    });
+  }
   API.update = function(product) {
-    product.user = "56a41c15c2bea6f40ea2402b";
+    product.user = User.getThis().id;
     if (typeof(product.photo) === 'undefined') product.photo = null;
+    console.log('saving product', JSON.stringify(product));
     return $http({
       method: 'PUT',
       url:  BASE_URL.get() + 'products',
@@ -40,8 +53,28 @@ angular.module('starter.services')
       return [];
     });
   }
-  API.destroy = function() {
-
+  API.create = function(product) {
+    product.user = User.getThis();
+    if (typeof(product.photo) === 'undefined') product.photo = null;
+    return $http({
+      method: 'POST',
+      url:  BASE_URL.get() + 'products',
+      data: product,
+    }).then(function(res) {
+      return res.data;
+    }, function(err) {
+      return [];
+    });
+  }
+  API.delete = function(id) {
+    return $http({
+      method: 'DELETE',
+      url:  BASE_URL.get() + 'products/' + id,
+    }).then(function(res) {
+      return res.data;
+    }, function(err) {
+      return [];
+    });
   }
   return API;
 }]);

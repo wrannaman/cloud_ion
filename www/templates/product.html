@@ -15,6 +15,27 @@
         <input type="number" ng-model="product.quantity">
       </label>
 
+      <div class="list">
+        <label class="item item-input item-select">
+          <div class="input-label">
+            Gender
+          </div>
+          <select ng-model="product.gender">
+            <option>male</option>
+            <option selected>female</option>
+            <option>both</option>
+          </select>
+        </label>
+      </div>
+      <ion-list>
+
+        <ion-checkbox ng-model="product.winter">Winter</ion-checkbox>
+        <ion-checkbox ng-model="product.spring">Spring</ion-checkbox>
+        <ion-checkbox ng-model="product.summer">Summer</ion-checkbox>
+        <ion-checkbox ng-model="product.fall">Fall</ion-checkbox>
+
+      </ion-list>
+
       <label class="item item-input">
         <button class="button button-balanced" style="margin: 0 auto;" ng-click="photo()">
           Take Photo
@@ -25,6 +46,13 @@
           Update Product
         </button>
       </label>
+      <label class="item item-input">
+        <button class="button button-assertive" style="margin: 0 auto;" ng-click="delete()">
+          Delete Product
+        </button>
+      </label>
+
+
 
       <div ng-show="product.photo" class="image">
         <img ng-src="{{product.photo}}" style="max-width: 150px;">

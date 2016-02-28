@@ -2,60 +2,23 @@ angular.module('starter.controllers', [])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
 
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  // Form data for the login modal
-  //$scope.loginData = {};
-
-  // Create the login modal that we will use later
-  // $ionicModal.fromTemplateUrl('templates/login.html', {
-  //   scope: $scope
-  // }).then(function(modal) {
-  //   $scope.modal = modal;
-  // });
-  //
-  // // Triggered in the login modal to close it
-  // $scope.closeLogin = function() {
-  //   $scope.modal.hide();
-  // };
-  //
-  // // Open the login modal
-  // $scope.login = function() {
-  //   $scope.modal.show();
-  // };
-  //
-  // // Perform the login action when the user submits the login form
-  // $scope.doLogin = function() {
-  //   console.log('Doing login', $scope.loginData);
-  //
-  //   // Simulate a login delay. Remove this and replace with your login
-  //   // code if using a login system
-  //   $timeout(function() {
-  //     $scope.closeLogin();
-  //   }, 1000);
-  // };
 })
 
-.controller('UsersCtrl', function($scope, $http, $ionicLoading, User) {
-  $ionicLoading.show();
+// .controller('UsersCtrl', function($scope, $http, $ionicLoading, User) {
+//   $ionicLoading.show();
+//
+//   $scope.users = [];
+//   User.fetch()
+//   .then(function(users){
+//     console.log('users', users);
+//     $scope.users = users;
+//     $ionicLoading.hide();
+//   });
+// })
 
-  $scope.users = [];
-  User.fetch()
-  .then(function(users){
-    console.log('users', users);
-    $scope.users = users;
-    $ionicLoading.hide();
-  });
-})
-
-.controller('UserCtrl', function($scope, User, $stateParams, $ionicLoading) {
-  $scope.users = User.get();
-  $scope.user = $scope.users[$stateParams.id];
+.controller('ProfileCtrl', function($scope, User, $stateParams, $ionicLoading) {
+  $scope.user = User.getThis();
+  console.log('users', $scope.user);
   var userCopy = $scope.user;
   userCopy = {
     firstName: $scope.user.firstName,
@@ -86,74 +49,144 @@ angular.module('starter.controllers', [])
     User.update($scope.user)
     .then(function(updated){
       $ionicLoading.hide();
-      if (typeof(updated.error) !== 'undefined' && updated.user && updated.user.length === 1) {
-        $scope.user = updated.user[0];
-        alert('User updated successfully.');
-        userCopy = {
-          firstName: $scope.user.firstName,
-          lastName: $scope.user.lastName,
-          email: $scope.user.email,
-        }
-      } else {
-        $scope.user.firstName = userCopy.firstName;
-        $scope.user.lastName = userCopy.lastName;
-        $scope.user.email = userCopy.email;
-        alert('Error: ' + JSON.stringify(updated.error[0]))
-      }
+      console.log('updated', updated);
+      if (updated.error.length === 0) return alert('Your profile was updated.')
+      // if (typeof(updated.error) !== 'undefined' && updated.user && updated.user.length === 1) {
+      //   $scope.user = updated.user[0];
+      //   alert('User updated successfully.');
+      //   userCopy = {
+      //     firstName: $scope.user.firstName,
+      //     lastName: $scope.user.lastName,
+      //     email: $scope.user.email,
+      //   }
+      // } else {
+      //   $scope.user.firstName = userCopy.firstName;
+      //   $scope.user.lastName = userCopy.lastName;
+      //   $scope.user.email = userCopy.email;
+      //   alert('Error: ' + JSON.stringify(updated.error[0]))
+      // }
     })
     .catch(function(error){
       $ionicLoading.hide();
     })
   }
 
-  //   firstName  : { type: "string" },
-  // lastName   : { type: "string" },
-  // email      : { type: "string", unique: true },
-  // password   : { type: "string", required: true },
 
-  console.log('UserCtrl stateParams', $stateParams);
 })
 
-.controller('ProductsCtrl', function($scope, User, $stateParams, BASE_URL, $ionicLoading, Products) {
+.controller('ProductsCtrl', function($scope, User, $stateParams, BASE_URL, $ionicLoading, Products, $ionicModal) {
   console.log('products!');
+  $scope.user = User.getThis();
   $scope.products = [];
-  Products.fetch()
+  $scope.newProduct = {};
+  Products.fetch($scope.user)
   .then(function(products){
+    console.log('products in ctrl', products);
+    $ionicLoading.hide();
     $scope.products = products;
+    if ($scope.products.length === 0) return;
     $scope.products = $scope.products.map(function(p,i){
       if(p.photo) p.photo = BASE_URL.get().replace('/3/', '') + '/' + p.photo.replace('/3/', '');
       console.log('p photo', p.photo);
       return p;
     })
-    //console.log('products', JSON.stringify(products));
-
   })
+
+    $ionicModal.fromTemplateUrl('templates/addProduct.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      console.log('modal', modal);
+      $scope.modal = modal;
+    });
+    $scope.openModal = function() {
+      console.log('open modal');
+      $scope.modal.show();
+    };
+    $scope.closeModal = function() {
+      $scope.modal.hide();
+      $ionicLoading.show();
+      Products.fetch($scope.user)
+      .then(function(products){
+        console.log('products in ctrl', products);
+        $ionicLoading.hide();
+        $scope.products = products;
+        if ($scope.products.length === 0) return;
+        $scope.products = $scope.products.map(function(p,i){
+          if(p.photo) p.photo = BASE_URL.get().replace('/3/', '') + '/' + p.photo.replace('/3/', '');
+          console.log('p photo', p.photo);
+          return p;
+        })
+      })
+    };
+    //Cleanup the modal when we're done with it!
+    $scope.$on('$destroy', function() {
+      $scope.modal.remove();
+    });
+    // Execute action on hide modal
+    $scope.$on('modal.hidden', function() {
+      // Execute action
+    });
+    // Execute action on remove modal
+    $scope.$on('modal.removed', function() {
+      // Execute action
+    });
+ $scope.saveProduct = function(){
+   console.log('new product', $scope.newProduct);
+   var seasons = [];
+   if ( $scope.newProduct.winter) seasons.push('winter');
+   if ( $scope.newProduct.spring) seasons.push('spring');
+   if ( $scope.newProduct.summer) seasons.push('summer');
+   if ( $scope.newProduct.fall) seasons.push('fall');
+   $scope.newProduct.season = seasons;
+
+   Products.create($scope.newProduct)
+   .then(function(response){
+     console.log('response', response);
+     if (typeof(response.error) !== 'undefined' && response.error.length === 0) {
+       alert('product created');
+       $scope.closeModal();
+     }
+   })
+ }
 
 })
 
-.controller('ProductCtrl', function($scope, $sce, User, $timeout, BASE_URL, $stateParams, $ionicLoading, Products, $cordovaCamera, Photo) {
-  console.log('products!');
-  $scope.products = Products.get();
-  $scope.product = $scope.products[$stateParams.id];
-  $scope.newImage = false;
-  $scope.trust = function(src){
-    return $sce.trustAsResourceUrl(src);
-  }
+.controller('ProductCtrl', function($scope, $sce, User, $timeout, BASE_URL, $stateParams, $ionicLoading, Products, $location, $cordovaCamera, Photo) {
+  console.log('products!', $stateParams.id);
+  $scope.product = {};
+  var pCopy;
+  Products.fetchOne($stateParams.id)
+  .then(function(product){
 
-  var pCopy = $scope.product;
-  pCopy = {
-    name: $scope.product.name,
-    cost: $scope.product.cost,
-    quantity: $scope.product.quantity,
-    photo: $scope.product.photo,
-  }
+    console.log('product', JSON.stringify(product));
+    $scope.product = product.products;
+    if ($scope.product.season.indexOf('winter') !== -1 ) $scope.product.winter = true
+    else $scope.product.winter = false;
+    if ($scope.product.season.indexOf('spring') !== -1 ) $scope.product.spring = true
+    else $scope.product.spring = false;
+    if ($scope.product.season.indexOf('summer') !== -1 ) $scope.product.summer = true
+    else $scope.product.summer = false;
+    if ($scope.product.season.indexOf('fall') !== -1 ) $scope.product.fall = true
+    else $scope.product.fall = false;
 
-  $scope.products = [];
-  Products.fetch()
-  .then(function(products){
-    $scope.products = products;
-    console.log('products', products);
+    pCopy = {
+      name: $scope.product.name,
+      cost: $scope.product.cost,
+      quantity: $scope.product.quantity,
+      photo: $scope.product.photo,
+      season: $scope.product.season,
+      gender: $scope.product.gender,
+    }
   });
+
+
+  //$scope.products = [];
+  // Products.fetch()
+  // .then(function(products){
+  //   $scope.products = products;
+  //   console.log('products', products);
+  // });
 
   $scope._upload_photo = function(name) {
     Photo.upload_photo( name )
@@ -173,7 +206,9 @@ angular.module('starter.controllers', [])
   $scope.update = function() {
     console.log($scope.product);
 
-    if (pCopy.name == $scope.product.name && pCopy.cost == $scope.product.cost && pCopy.quantity == $scope.product.quantity && !$scope.newPhoto) return alert('No changes were made.');
+    if (pCopy.name == $scope.product.name && pCopy.cost == $scope.product.cost
+      && pCopy.quantity == $scope.product.quantity && !$scope.newPhoto
+      && $scope.product.gender === pCopy.gender && $scope.product.winter === pCopy.winter && $scope.product.spring === pCopy.spring && $scope.product.summer === pCopy.summer && $scope.product.fall === pCopy.fall) return alert('No changes were made.');
 
     var letRx = /^[a-z A-Z]*$/;
 
@@ -201,6 +236,13 @@ angular.module('starter.controllers', [])
       return alert('cost must be greater than or equal to zero');
     }
 
+    var seasons = [];
+    if ( $scope.product.winter) seasons.push('winter');
+    if ( $scope.product.spring) seasons.push('spring');
+    if ( $scope.product.summer) seasons.push('summer');
+    if ( $scope.product.fall) seasons.push('fall');
+    $scope.product.season = seasons;
+
     $ionicLoading.show();
 
     Products.update($scope.product)
@@ -210,9 +252,10 @@ angular.module('starter.controllers', [])
       if (typeof(updated.error) !== 'undefined' && updated.product && updated.product.length === 1) {
         $scope.product = updated.product[0];
         alert('Product updated successfully.');
+        $location.url('/app/products');
       } else {
         $scope.resetOrig();
-        alert('Error: ' + JSON.stringify(updated.error[0]))
+        alert('Error: ' + JSON.stringify(updated))
       }
     })
     .catch(function(error){
@@ -236,7 +279,7 @@ angular.module('starter.controllers', [])
     if (true) $scope.cam_options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
 
     $cordovaCamera.getPicture($scope.cam_options).then(function(imageData) {
-      console.log('imageData', imageData);
+      //console.log('imageData', imageData);
       $scope._upload_photo(imageData);
 
       var image = document.getElementById('test');
@@ -251,4 +294,71 @@ angular.module('starter.controllers', [])
   }
 
 
-});
+  $scope.delete = function(){
+    $ionicLoading.show();
+    Products.delete($scope.product.id)
+    .then(function(response){
+      $ionicLoading.hide();
+      console.log('resonpse', JSON.stringify(response));
+      $location.url('/app/products');
+    })
+  }
+
+})
+
+.controller('LoginCtrl', function($scope, $sce, User, $timeout, BASE_URL, $stateParams, $ionicLoading, Products, $cordovaCamera, Photo, $location) {
+  console.log('login!');
+  $scope.user = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  }
+  $scope.login = function(){
+    console.log('user', $scope.user);
+    if ( typeof($scope.user.email) === 'undefined' ) return alert('Email format is invalid.');
+    if ( !$scope.user.email ) return alert('please enter your email');
+    if ( !$scope.user.password ) return alert('please enter your password');
+    $ionicLoading.show();
+    User.login($scope.user)
+    .then(function(response){
+      console.log('login res', JSON.stringify(response));
+      $ionicLoading.hide();
+      if ( typeof(response.success) !== 'undefined' && response.success ) {
+        console.log('should redirect');
+        return $location.url('/app/products')
+      }
+      if ( typeof(response.error) !== 'undefined' && response.error === 'Error.Passport.Password.Wrong') {
+        return alert('Password incorrect.')
+      }
+    })
+  }
+})
+
+
+.controller('RegisterCtrl', function($scope, $sce, User, $timeout, BASE_URL, $stateParams, $ionicLoading, Products, $cordovaCamera, Photo, $location) {
+  console.log('RegisterCtrl!');
+  $scope.user = {
+    email: '',
+    password: '',
+  }
+  $scope.login = function(){
+    $ionicLoading.show();
+    console.log('user', $scope.user);
+    if ( typeof($scope.user.email) === 'undefined' ) return alert('Email format is invalid.');
+    if ( !$scope.user.email ) return alert('please enter your email');
+    if ( !$scope.user.password ) return alert('please enter your password');
+    User.register($scope.user)
+    .then(function(response){
+      $ionicLoading.hide();
+      console.log('response', JSON.stringify(response));
+      if (response.data.error === "Error.Passport.User.Exists") {
+        return alert(' This user already exists. Try logging in. ')
+      }
+      if ( typeof(response.data.success) !== 'undefined' && response.data.success){
+        alert('Registration Successfull, please login');
+        $location.url('/login');
+      }
+    })
+  }
+})

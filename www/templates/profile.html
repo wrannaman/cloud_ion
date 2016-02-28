@@ -1,4 +1,4 @@
-<ion-view view-title="User">
+<ion-view view-title="Profile">
   <ion-content>
     <h1 style="text-align:center;">Update {{ user.firstName }}</h1>
     <div class="list">
@@ -12,7 +12,7 @@
       </label>
       <label class="item item-input">
         <span class="input-label">Email</span>
-        <input type="text" ng-model="user.email">
+        <input type="text" ng-model="user.email" disabled>
       </label>
       <label class="item item-input">
         <button class="button button-balanced" style="margin: 0 auto;" ng-click="update()">

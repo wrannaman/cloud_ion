@@ -30,7 +30,7 @@ $sceDelegateProvider.resourceUrlWhitelist(['self', new RegExp('^(http[s]?):\/\/(
 
   $stateProvider
 
-    .state('app', {
+  .state('app', {
     url: '/app',
     abstract: true,
     templateUrl: 'templates/menu.html',
@@ -57,25 +57,37 @@ $sceDelegateProvider.resourceUrlWhitelist(['self', new RegExp('^(http[s]?):\/\/(
         }
       }
     })
-    .state('app.users', {
-      url: '/users',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/users.html',
-          controller: 'UsersCtrl'
-        }
-      }
+    // .state('app.users', {
+    //   url: '/users',
+    //   views: {
+    //     'menuContent': {
+    //       templateUrl: 'templates/users.html',
+    //       controller: 'UsersCtrl'
+    //     }
+    //   }
+    // })
+    .state('login', {
+      url: '/login',
+      abstract: false,
+      templateUrl: 'templates/login.html',
+      controller: 'LoginCtrl'
+    })
+    .state('register', {
+      url: '/register',
+      abstract: false,
+      templateUrl: 'templates/register.html',
+      controller: 'RegisterCtrl'
     })
 
-  .state('app.single', {
-    url: '/users/user/:id',
+  .state('app.profile', {
+    url: '/profile',
     views: {
       'menuContent': {
-        templateUrl: 'templates/user.html',
-        controller: 'UserCtrl'
+        templateUrl: 'templates/profile.html',
+        controller: 'ProfileCtrl'
       }
     }
   });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/products');
+  $urlRouterProvider.otherwise('/login');
 });

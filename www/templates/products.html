@@ -1,7 +1,10 @@
 <ion-view view-title="Products" cache-view="false">
   <ion-content>
     <ion-list>
-      <ion-item ng-repeat="p in products track by $index" href="#/app/products/product/{{$index}}">
+      <button class="button button-dark" ng-click="openModal()" style="width: 100%;">
+        Add A Product
+      </button>
+      <ion-item ng-repeat="p in products track by $index" href="#/app/products/product/{{p.id}}">
         <div class="row">
           <div class="photo" ng-show="p.photo" style="margin-top: 9px;">
             <img ng-src="{{ p.photo }}" style="width: 40px;">
@@ -10,7 +13,7 @@
             {{ p.name }}
           </div>
           <div class="more" style="width: 100%;">
-            <a href="#/app/products/product/{{$index}}" class="button icon-right ion-chevron-right button-clear" style="float:right;"></a>
+            <a href="#/app/products/product/{{p.id}}" class="button icon-right ion-chevron-right button-clear" style="float:right;"></a>
           </div>
         </div>
       </ion-item>
